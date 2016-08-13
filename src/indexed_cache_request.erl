@@ -66,6 +66,18 @@ field_type(FieldTypes, FieldId) when is_tuple(FieldTypes) ->
 
 make_query(TableName, FieldNames, FieldTypes, Constrains, SortField, Order, Offset, Count, Aggregations) ->
     {QueryParts, Substitutions} = make_top_constrains(FieldNames, FieldTypes, Constrains),
+    LimitQuery = if
+                     Count>=0->
+                         <<"LIMIT ",(integer_to_binary(Count))/binary," ">>;
+                     true->
+                         <<>>
+                 end,
+    OffsetQuery = if
+                      Offset>=0->
+                          <<"OFFSET ",(integer_to_binary(Offset))/binary," ">>;
+                      true->
+                          <<>>
+                  end,
     Query = [
         <<"SELECT * FROM ">>, TableName, <<" ">>,
         QueryParts,
@@ -74,18 +86,8 @@ make_query(TableName, FieldNames, FieldTypes, Constrains, SortField, Order, Offs
             Order == asc -> <<"ASC ">>;
             Order == desc -> <<"DESC ">>
         end,
-        if
-            Count>=0->
-                <<"LIMIT ">>, integer_to_binary(Count), <<" ">>;
-            true->
-                <<>>
-        end,
-        if
-            Offset>=0->
-                <<"OFFSET ">>, integer_to_binary(Offset);
-            true->
-                <<>>
-        end
+        LimitQuery,
+        OffsetQuery
     ],
     AggsQuery = if
                     Aggregations =/= [] ->
