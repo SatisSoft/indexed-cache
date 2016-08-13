@@ -74,8 +74,18 @@ make_query(TableName, FieldNames, FieldTypes, Constrains, SortField, Order, Offs
             Order == asc -> <<"ASC ">>;
             Order == desc -> <<"DESC ">>
         end,
-        <<"LIMIT ">>, integer_to_binary(Count), <<" ">>,
-        <<"OFFSET ">>, integer_to_binary(Offset)
+        if
+            Count>=0->
+                <<"LIMIT ">>, integer_to_binary(Count), <<" ">>;
+            true->
+                <<>>
+        end,
+        if
+            Offset>=0->
+                <<"OFFSET ">>, integer_to_binary(Offset);
+            true->
+                <<>>
+        end
     ],
     AggsQuery = if
                     Aggregations =/= [] ->
