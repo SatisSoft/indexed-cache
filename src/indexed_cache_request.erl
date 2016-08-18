@@ -240,6 +240,8 @@ update(PoolId, GroupId, Update) ->
     ],
     Update2 = transpose(Update1),
     FieldTypes = types_list(indexed_cache_connection:field_types(PoolId)),
+    lager:info("FieldTypes ~p",[length(FieldTypes)]),
+    lager:info("Update ~p",[length(Update2)]),
     Update3 = case  Update2 of
                   [] ->
                       [{?VOLT_ARRAY, preserialize(ItemType, [])} || ItemType <- FieldTypes];
