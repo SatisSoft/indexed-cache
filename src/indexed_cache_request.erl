@@ -62,6 +62,7 @@ field_name(FieldNames, FieldId) ->
     atom_to_binary(element(FieldId, FieldNames), utf8).
 
 field_type(FieldTypes, FieldId) when is_tuple(FieldTypes) ->
+    lager:info("GET ~p:~p",[FieldTypes,FieldId]),
     element(FieldId, FieldTypes).
 
 make_query(TableName, FieldNames, FieldTypes, Constrains, SortField, Order, Offset, Count, Aggregations) ->

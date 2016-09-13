@@ -37,6 +37,9 @@ terminate(_Reason, #state{pool_id = PoolId}) ->
     erlvolt:close_pool(PoolId).
 
 
+handle_call(table_name, _From, State = #state{table_name = {M,F,A}}) ->
+    TableName = erlang:apply(M,F,A),
+    {reply, TableName, State};
 handle_call(table_name, _From, State = #state{table_name = TableName}) ->
     {reply, TableName, State};
 handle_call(field_types, _From, State = #state{field_types = FiledTypes}) ->
