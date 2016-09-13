@@ -19,7 +19,7 @@
 start_link(PoolId, TableName, Fieldtypes, FieldNames, ConnectionOpts) ->
     gen_server:start_link({local, PoolId}, ?MODULE, [PoolId, TableName, Fieldtypes, FieldNames, ConnectionOpts], []).
 
-init([PoolId, TableName, FieldTypes, FieldNames, ConnectionOpts]) when is_binary(TableName), is_tuple(FieldTypes), is_tuple(FieldNames) ->
+init([PoolId, TableName, FieldTypes, FieldNames, ConnectionOpts]) when  is_tuple(FieldTypes), is_tuple(FieldNames) ->
     process_flag(trap_exit, true),
     ok = erlvolt:add_pool(PoolId, ConnectionOpts),
     {ok, #state{pool_id = PoolId, table_name = TableName, field_types = FieldTypes, field_names = FieldNames}}.
