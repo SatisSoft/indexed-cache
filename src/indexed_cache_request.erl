@@ -183,6 +183,13 @@ make_constrain(FieldNames, FieldTypes, {'or', ConstrainsList}) ->
     end, ConstrainsList)),
     {QParts, Substs} = join_qry_parts(<<" OR ">>, Qry),
     {[<<" ( ">>, QParts, <<" ) ">>], Substs};
+make_constrain(FieldNames, FieldTypes, {'and', ConstrainsList}) ->
+    Qry = lists:unzip(lists:map(fun
+                                    (Constrains) when is_list(Constrains)-> make_constrains(FieldNames, FieldTypes, Constrains); %% Recursive building
+                                    (Constrain) -> make_constrain(FieldNames, FieldTypes, Constrain)
+                                end, ConstrainsList)),
+    {QParts, Substs} = join_qry_parts(<<" AND ">>, Qry),
+    {[<<" ( ">>, QParts, <<" ) ">>], Substs};
 make_constrain(_FieldNames, _FieldTypes, Constrain) ->
     throw({invalid_constrain, Constrain}).
 
