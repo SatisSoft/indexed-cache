@@ -155,7 +155,7 @@ join_qry_parts(Op, {[QHead | QRest], Substs}) ->
         <<" ">>
     ], lists:append(Substs)}.
 
-make_constrain(FieldNames, FieldTypes, {Op, Field, Value}) when Op ==eq; Op == lt; Op == lte; Op == gt; Op == gte->
+make_constrain(FieldNames, FieldTypes, {Op, Field, Value}) when Op== neq; Op ==eq; Op == lt; Op == lte; Op == gt; Op == gte->
     FieldType = field_type(FieldTypes, Field),
     {[field_name(FieldNames, Field), sym_for_op(Op), mb_cast(FieldType)], [{FieldType, Value}]};
 make_constrain(FieldNames, FieldTypes, {startswith, Field, Value}) ->
@@ -189,6 +189,7 @@ make_constrain(_FieldNames, _FieldTypes, Constrain) ->
 sym_for_op(Op) ->
     case Op of
         eq ->  <<" = ">>;
+        neq-> <<" <> ">>;
 
         lt ->  <<" < ">>;
         lte -> <<" <= ">>;
@@ -258,6 +259,7 @@ update(PoolId, GroupId, Update) ->
                               error({convertion_error, EType, EVal, element(EPos, FieldNames)})
                       end
     end,
+    lager:info("Update ~p",[length(Update3)]),
     case erlvolt:call_procedure(PoolId, "UpdateData", [GroupId] ++ Update3) of
         {result, {voltresponse, {0, _, 1, <<>>, 128, <<>>, <<>>, _}, _}} ->
             true;

@@ -80,4 +80,5 @@ get(PoolId, Constrains, SortField, Order, Offset, Count, Aggregations) when is_l
 -spec update(PoolId :: atom(), GroupId :: binary(), Update::objects()) ->
     true.
 update(PoolId, GroupId, Update) ->
+    lager:info("Update ~p:~p",[GroupId,Update]),
     indexed_cache_request:update(PoolId, GroupId, Update).
