@@ -62,7 +62,6 @@ field_name(FieldNames, FieldId) ->
     atom_to_binary(element(FieldId, FieldNames), utf8).
 
 field_type(FieldTypes, FieldId) when is_tuple(FieldTypes) ->
-    lager:info("GET ~p:~p",[FieldTypes,FieldId]),
     element(FieldId, FieldTypes).
 
 make_query(TableName, FieldNames, FieldTypes, Constrains, SortField, Order, Offset, Count, Aggregations) ->
@@ -249,8 +248,6 @@ update(PoolId, GroupId, Update) ->
     ],
     Update2 = transpose(Update1),
     FieldTypes = types_list(indexed_cache_connection:field_types(PoolId)),
-    lager:info("FieldTypes ~p",[length(FieldTypes)]),
-    lager:info("Update ~p",[length(Update2)]),
     Update3 = case  Update2 of
                   [] ->
                       [{?VOLT_ARRAY, preserialize(ItemType, [])} || ItemType <- FieldTypes];
@@ -266,7 +263,6 @@ update(PoolId, GroupId, Update) ->
                               error({convertion_error, EType, EVal, element(EPos, FieldNames)})
                       end
     end,
-    lager:info("Update ~p",[length(Update3)]),
     case erlvolt:call_procedure(PoolId, "UpdateData", [GroupId] ++ Update3) of
         {result, {voltresponse, {0, _, 1, <<>>, 128, <<>>, <<>>, _}, _}} ->
             true;
