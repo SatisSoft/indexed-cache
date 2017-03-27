@@ -21,7 +21,8 @@ start_link(PoolId, TableName, Fieldtypes, FieldNames, ConnectionOpts) ->
 
 init([PoolId, TableName, FieldTypes, FieldNames, ConnectionOpts]) when  is_tuple(FieldTypes), is_tuple(FieldNames) ->
     process_flag(trap_exit, true),
-    ok = erlvolt:add_pool(PoolId, ConnectionOpts),
+    LoginOpts = application:get_env(zont_lm, volt_login_connection, []),
+    ok = erlvolt:add_pool(PoolId, ConnectionOpts, LoginOpts),
     {ok, #state{pool_id = PoolId, table_name = TableName, field_types = FieldTypes, field_names = FieldNames}}.
 
 field_types(PoolId) ->
