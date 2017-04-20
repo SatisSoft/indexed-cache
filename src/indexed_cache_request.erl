@@ -21,6 +21,7 @@
 -endif.
 
 -define(is_time(Time), (Time == date orelse Time == datetime)).
+-define(VOLTDB_UPDATE_TIMEOUT, 100*1000).
 
 get(PoolId, Constrains, SortField, Order, Offset, Count, Aggregations) ->
     %% Assuming reading is not so frequent job, will just generate Ad hock queries.
@@ -263,7 +264,7 @@ update(PoolId, GroupId, Update) ->
                               error({convertion_error, EType, EVal, element(EPos, FieldNames)})
                       end
     end,
-    case erlvolt:call_procedure(PoolId, "UpdateData", [GroupId] ++ Update3) of
+    case erlvolt:call_procedure(PoolId, "UpdateData", [GroupId] ++ Update3, [{send_timeout, ?VOLTDB_UPDATE_TIMEOUT}]) of
         {result, {voltresponse, {0, _, 1, <<>>, 128, <<>>, <<>>, _}, _}} ->
             true;
         {result,{voltresponse,{_,_,_,Msg,_,_,_,_},[]}} ->
