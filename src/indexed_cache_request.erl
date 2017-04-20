@@ -21,7 +21,7 @@
 -endif.
 
 -define(is_time(Time), (Time == date orelse Time == datetime)).
--define(VOLTDB_UPDATE_TIMEOUT, 100*1000).
+-define(VOLTDB_UPDATE_TIMEOUT, 600*1000).
 
 get(PoolId, Constrains, SortField, Order, Offset, Count, Aggregations) ->
     %% Assuming reading is not so frequent job, will just generate Ad hock queries.
