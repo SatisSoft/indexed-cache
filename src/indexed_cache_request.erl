@@ -22,6 +22,7 @@
 
 -define(is_time(Time), (Time == date orelse Time == datetime)).
 -define(VOLTDB_UPDATE_TIMEOUT, 600*1000).
+-define(VOLTDB_GET_TIMEOUT, 60*1000).
 
 get(PoolId, Constrains, SortField, Order, Offset, Count, Aggregations) ->
     %% Assuming reading is not so frequent job, will just generate Ad hock queries.
@@ -32,7 +33,7 @@ get(PoolId, Constrains, SortField, Order, Offset, Count, Aggregations) ->
     FieldTypes = indexed_cache_connection:field_types(PoolId),
     SortFieldName = field_name(FieldNames, SortField),
     Query = make_query(TableName, FieldNames, FieldTypes, Constrains, SortFieldName, Order, Offset, Count, Aggregations),
-    case erlvolt:call_procedure(PoolId, "GetData", Query) of
+    case erlvolt:call_procedure(PoolId, "GetData", Query, [{send_timeout, ?VOLTDB_GET_TIMEOUT}]) of
         {result, {voltresponse, {0, _, 1, <<>>, 128, <<>>, <<>>, _}, [
             {volttable,_,_,Rows},
             {volttable,_,_,AggregationRes}
