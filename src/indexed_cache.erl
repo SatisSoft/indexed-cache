@@ -44,7 +44,7 @@
 -export_type([field_names/0, field_types/0]).
 
 %% API
--export([start/0, stop/0, update/3, get/7, connect/3, connect/4, connect/5]).
+-export([start/0, stop/0, update/3, get/7, connect/3, connect/4, connect/5, delete/2]).
 
 start() ->
     application:ensure_all_started(?MODULE).
@@ -81,3 +81,6 @@ get(PoolId, Constrains, SortField, Order, Offset, Count, Aggregations) when is_l
     true.
 update(PoolId, GroupId, Update) ->
     indexed_cache_request:update(PoolId, GroupId, Update).
+
+delete(PoolId, GroupId) ->
+    indexed_cache_request:delete(PoolId, GroupId).

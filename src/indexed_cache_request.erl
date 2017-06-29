@@ -14,7 +14,7 @@
 -include_lib("erlvolt/include/erlvolt.hrl").
 
 %% API
--export([get/7, update/3]).
+-export([get/7, update/3, delete/2]).
 
 -ifdef(TEST).
 -compile(export_all).
@@ -268,6 +268,16 @@ update(PoolId, GroupId, Update) ->
                       end
     end,
     case erlvolt:call_procedure(PoolId, "UpdateData", [GroupId] ++ Update3, [{send_timeout, ?VOLTDB_UPDATE_TIMEOUT}]) of
+        {result, {voltresponse, {0, _, 1, <<>>, 128, <<>>, <<>>, _}, _}} ->
+            true;
+        {result,{voltresponse,{_,_,_,Msg,_,_,_,_},[]}} ->
+            error({volt_error, Msg})
+    end.
+
+delete(PoolId, GroupId) ->
+    Res = erlvolt:call_procedure(PoolId, "DeleteData", [GroupId], [{send_timeout, ?VOLTDB_UPDATE_TIMEOUT}]),
+%%    case erlvolt:call_procedure(PoolId, "UpdateData", [GroupId], [{send_timeout, ?VOLTDB_UPDATE_TIMEOUT}]) of
+    case Res of
         {result, {voltresponse, {0, _, 1, <<>>, 128, <<>>, <<>>, _}, _}} ->
             true;
         {result,{voltresponse,{_,_,_,Msg,_,_,_,_},[]}} ->
